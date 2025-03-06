@@ -6,9 +6,10 @@ public class Main {
     static int currency;
     static int menuOption;
 
-    static int depositAmount;
-    static int withdrawAmount;
     static double convertToEuro = 0.93;
+    static int depositAmount;
+    static double depositToEuro;
+    static int withdrawAmount;
 
     static int interest;
 
@@ -57,10 +58,10 @@ public class Main {
                 // 6 MONTHS
                 // 1 YEAR
                 // 2 YEARS
-            // EXIT
-        // USER INPUT
-        // LOGIC
-        // EXIT MESSAGE
+
+        System.out.println("************************************************");
+        System.out.println("Thank you for using Mike's Java Banking Program!");
+        System.out.println("Check out my other projects ;)");
 
     }
 
@@ -85,7 +86,7 @@ public class Main {
 
     static void checkBalance(){
         System.out.println("-------------------");
-        System.out.println("Balance: $" + balance);
+        System.out.printf("Balance: $%.2f\n", balance);
     }
 
     // DEPOSIT FUNDS (USD/EUR)
@@ -100,17 +101,27 @@ public class Main {
 
 
             // IF USD
-        if(currency == 1){
-            System.out.println("Depositing $" + depositAmount);
-            balance += depositAmount;
-            checkBalance();
+
+        if(depositAmount <= 1){
+            System.out.println("Amount cannot be lower than $1 or its equivalent!");
         }
+        else{
+            if(currency == 1){
+                System.out.println("Depositing $" + depositAmount);
+                balance += depositAmount;
+                checkBalance();
+
+            }
             // IF EUR
-        else if(currency == 2){
-            System.out.println("Depositing €" + (depositAmount * convertToEuro));
-            balance += (depositAmount * convertToEuro);
-            checkBalance();
+            else if(currency == 2){
+                depositToEuro = depositAmount * convertToEuro;
+                System.out.printf("Depositing €%.2f\n", depositToEuro);
+                balance += depositToEuro;
+                checkBalance();
+            }
         }
+
+
 
     }
 
