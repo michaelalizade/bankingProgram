@@ -11,7 +11,10 @@ public class Main {
     static double depositToEuro;
     static int withdrawAmount;
 
-    static int interest;
+    static int interestDuration;
+    static int investAmount;
+    static double investResult;
+    static double interestRate = 0.02;
 
     static int start;
     static int end;
@@ -48,6 +51,7 @@ public class Main {
                 case 1 -> checkBalance();
                 case 2 -> depositFunds();
                 case 3 -> withdrawFunds();
+                case 4 -> investFunds();
                 case 5 -> end = 5;
             }
 
@@ -115,7 +119,7 @@ public class Main {
             // IF EUR
             else if(currency == 2){
                 depositToEuro = depositAmount * convertToEuro;
-                System.out.printf("Depositing €%.2f\n", depositToEuro);
+                System.out.printf("Depositing $%.2f\n", depositToEuro);
                 balance += depositToEuro;
                 checkBalance();
             }
@@ -164,12 +168,102 @@ public class Main {
             }
             else {
                 balance -= withdrawAmount * convertToEuro;
-                System.out.println("Withdrawing €" + withdrawAmount);
+                System.out.println("Withdrawing $" + withdrawAmount);
                 checkBalance();
             }
 
 
         }
+
+
+
+
+
+    }
+
+    // COMPOUND INTEREST OVER 3,6,12,24 MONTHS
+
+    static void investFunds(){
+
+        System.out.println("---------------------");
+        System.out.println("Enter amount to compound: ");
+        investAmount = scanner.nextInt();
+
+        chooseCurrency();
+
+        System.out.println("Duration of contract:");
+        System.out.println("1. 3 months");
+        System.out.println("2. 6 months");
+        System.out.println("3. 12 months");
+        System.out.println("4. 24 months");
+
+        System.out.print("Choose an option: ");
+        interestDuration = scanner.nextInt();
+
+
+        if (currency == 1){
+
+            if(investAmount > balance){
+                System.out.println("Insufficient funds!");
+            }
+            else if(investAmount < 0){
+                System.out.println("Amount cannot be less than zero!");
+            }
+            else{
+
+                if(interestDuration == 1){
+
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 3);
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 2){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 6);
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 3){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 12);
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 4){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 24);
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+
+            }
+
+        }
+        else if(currency == 2){
+
+            if(investAmount * convertToEuro> balance){
+                System.out.println("Insufficient funds!");
+            }
+            else if(investAmount * convertToEuro < 0){
+                System.out.println("Amount cannot be less than zero!");
+            }
+            else{
+
+                if(interestDuration == 1){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 3) * convertToEuro;
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 2){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 6) * convertToEuro;
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 3){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 12) * convertToEuro;
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+                else if(interestDuration == 4){
+                    investResult = investAmount * Math.pow((1 + 0.02/12), 24) * convertToEuro;
+                    System.out.println("This investment will earn you $" + investResult);
+                }
+
+            }
+
+
+        }
+
 
 
 
