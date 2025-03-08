@@ -1,20 +1,22 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Scanner;
 
 public class Main {
 
-    static double balance = 100;
+    static BigDecimal balance = new BigDecimal("100");
     static int currency;
     static int menuOption;
 
-    static double convertToEuro = 0.93;
+    static BigDecimal convertToEuro = new BigDecimal("0.93");
     static int depositAmount;
-    static double depositToEuro;
+    static BigDecimal depositToEuro;
     static int withdrawAmount;
 
     static int interestDuration;
     static int investAmount;
-    static double investResult;
-    static double interestRate = 0.02;
+    static BigDecimal investResult;
+    static BigDecimal interestRate = new BigDecimal("0.02");
 
     static int start;
     static int end;
@@ -103,6 +105,8 @@ public class Main {
         depositAmount = scanner.nextInt();
         scanner.nextLine();
 
+        BigDecimal depositValue = new BigDecimal(String.valueOf(depositAmount));
+
 
             // IF USD
 
@@ -112,20 +116,18 @@ public class Main {
         else{
             if(currency == 1){
                 System.out.println("Depositing $" + depositAmount);
-                balance += depositAmount;
+                balance = balance.add(depositValue);
                 checkBalance();
 
             }
             // IF EUR
             else if(currency == 2){
-                depositToEuro = depositAmount * convertToEuro;
+                depositToEuro = depositValue.multiply(convertToEuro);
                 System.out.printf("Depositing $%.2f\n", depositToEuro);
-                balance += depositToEuro;
+                balance = balance.add(depositToEuro);
                 checkBalance();
             }
         }
-
-
 
     }
 
@@ -139,18 +141,20 @@ public class Main {
         withdrawAmount = scanner.nextInt();
         scanner.nextLine();
 
+        BigDecimal withdrawValue = new BigDecimal(String.valueOf(withdrawAmount));
+
             // IF USD
 
         if(currency == 1){
 
-            if(withdrawAmount > balance){
+            if(withdrawValue.compareTo(balance) > 0){
                 System.out.println("Insufficient funds!");
             }
-            else if (withdrawAmount < 0){
+            else if (withdrawValue.intValue() < 0){
                 System.out.println("Amount must be greater than zero!");
             }
             else{
-                balance -= withdrawAmount;
+                balance = balance.subtract(withdrawValue);
                 System.out.println("Withdrawing $" + withdrawAmount);
                 checkBalance();
             }
@@ -160,14 +164,16 @@ public class Main {
 
         else if(currency == 2){
 
-            if(withdrawAmount * convertToEuro > balance){
+            BigDecimal withdrawEuroValue = withdrawValue.multiply(convertToEuro);
+
+            if(withdrawValue.multiply(convertToEuro).compareTo(balance) > 0){
                 System.out.println("Insufficient funds!");
             }
-            else if (withdrawAmount * convertToEuro < 0){
+            else if (withdrawValue.multiply(convertToEuro).doubleValue() < 0){
                 System.out.println("Amount must be greater than zero!");
             }
             else {
-                balance -= withdrawAmount * convertToEuro;
+                balance = balance.subtract(withdrawEuroValue);
                 System.out.println("Withdrawing $" + withdrawAmount);
                 checkBalance();
             }
@@ -185,11 +191,11 @@ public class Main {
 
     static void investFunds(){
 
+        chooseCurrency();
+
         System.out.println("---------------------");
         System.out.println("Enter amount to compound: ");
         investAmount = scanner.nextInt();
-
-        chooseCurrency();
 
         System.out.println("Duration of contract:");
         System.out.println("1. 3 months");
@@ -200,10 +206,14 @@ public class Main {
         System.out.print("Choose an option: ");
         interestDuration = scanner.nextInt();
 
+        BigDecimal investValue = new BigDecimal(String.valueOf(investAmount));
+        BigDecimal monthlyRate = interestRate.divide(new BigDecimal("12"), 10, RoundingMode.HALF_UP);
+
+        // IF USD
 
         if (currency == 1){
 
-            if(investAmount > balance){
+            if(investValue.compareTo(balance) > 0){
                 System.out.println("Insufficient funds!");
             }
             else if(investAmount < 0){
@@ -213,50 +223,76 @@ public class Main {
 
                 if(interestDuration == 1){
 
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 3);
-                    System.out.println("This investment will earn you $" + investResult);
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(3);
+
+                    investResult = investValue.multiply(factor);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 2){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 6);
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(6);
+
+                    investResult = investValue.multiply(factor);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 3){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 12);
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(12);
+
+                    investResult = investValue.multiply(factor);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 4){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 24);
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(24);
+
+                    investResult = investValue.multiply(factor);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
 
             }
 
         }
+
+        // IF EURO
+
         else if(currency == 2){
 
-            if(investAmount * convertToEuro> balance){
+            if(investValue.multiply(convertToEuro).compareTo(balance) > 0){
                 System.out.println("Insufficient funds!");
             }
-            else if(investAmount * convertToEuro < 0){
+            else if(investValue.multiply(convertToEuro).doubleValue() < 0){
                 System.out.println("Amount cannot be less than zero!");
             }
             else{
 
                 if(interestDuration == 1){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 3) * convertToEuro;
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(3);
+
+                    investResult = investValue.multiply(factor).multiply(convertToEuro);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 2){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 6) * convertToEuro;
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(6);
+
+                    investResult = investValue.multiply(factor).multiply(convertToEuro);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 3){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 12) * convertToEuro;
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(12);
+
+                    investResult = investValue.multiply(factor).multiply(convertToEuro);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
                 else if(interestDuration == 4){
-                    investResult = investAmount * Math.pow((1 + 0.02/12), 24) * convertToEuro;
-                    System.out.println("This investment will earn you $" + investResult);
+
+                    BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(24);
+
+                    investResult = investValue.multiply(factor).multiply(convertToEuro);
+                    System.out.println("This investment will earn you $" + investResult.setScale(2, RoundingMode.HALF_UP));
                 }
 
             }
