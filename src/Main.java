@@ -174,7 +174,7 @@ public class Main {
             }
             else {
                 balance = balance.subtract(withdrawEuroValue);
-                System.out.println("Withdrawing $" + withdrawAmount);
+                System.out.println("Withdrawing $" + withdrawEuroValue);
                 checkBalance();
             }
 
